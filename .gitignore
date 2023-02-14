@@ -55,3 +55,9 @@ dkms.conf
 # Protobuf stuff
 *.pb.cc
 *.pb.h
+
+# built stuff
+/build/
+
+# vscode stuff
+.vscode/
