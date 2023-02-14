@@ -87,10 +87,10 @@ void inverter_deserialize(network_enums *net_enums,
       continue;
     else
       last_timestamp = inverter->inverter_motor_temp(i)._inner_timestamp();
-    (*net_signals)["INV" + inv_suffix]["_timestamp"].push(
+    (*net_signals)["INV_MOTOR_TEMP" + inv_suffix]["_timestamp"].push(
         inverter->inverter_motor_temp(i)._inner_timestamp());
 #endif // CANLIB_TIMESTAMP
-    (*net_signals)["INV" + inv_suffix]["motor_temp"].push(
+    (*net_signals)["INV_MOTOR_TEMP" + inv_suffix]["motor_temp"].push(
         inverter->inverter_motor_temp(i).motor_temp());
   }
   for (int i = 0; i < inverter->inverter_temp_size(); i++) {
@@ -101,10 +101,10 @@ void inverter_deserialize(network_enums *net_enums,
       continue;
     else
       last_timestamp = inverter->inverter_temp(i)._inner_timestamp();
-    (*net_signals)["INV" + inv_suffix]["_timestamp"].push(
+    (*net_signals)["INV_TEMP" + inv_suffix]["_timestamp"].push(
         inverter->inverter_temp(i)._inner_timestamp());
 #endif // CANLIB_TIMESTAMP
-    (*net_signals)["INV" + inv_suffix]["temp"].push(
+    (*net_signals)["INV_TEMP" + inv_suffix]["temp"].push(
         inverter->inverter_temp(i).temperature());
   }
   for (int i = 0; i < inverter->inverter_speed_size(); i++) {
@@ -115,10 +115,10 @@ void inverter_deserialize(network_enums *net_enums,
       continue;
     else
       last_timestamp = inverter->inverter_speed(i)._inner_timestamp();
-    (*net_signals)["INV" + inv_suffix]["_timestamp"].push(
+    (*net_signals)["INV_SPEED" + inv_suffix]["_timestamp"].push(
         inverter->inverter_speed(i)._inner_timestamp());
 #endif // CANLIB_TIMESTAMP
-    (*net_signals)["INV" + inv_suffix]["speed"].push(
+    (*net_signals)["INV_SPEED" + inv_suffix]["speed"].push(
         inverter->inverter_speed(i).speed());
   }
   for (int i = 0; i < inverter->inverter_status_size(); i++) {
@@ -129,10 +129,10 @@ void inverter_deserialize(network_enums *net_enums,
       continue;
     else
       last_timestamp = inverter->inverter_status(i)._inner_timestamp();
-    (*net_signals)["INV" + inv_suffix]["_timestamp"].push(
+    (*net_signals)["INV_STATUS" + inv_suffix]["_timestamp"].push(
         inverter->inverter_status(i)._inner_timestamp());
 #endif // CANLIB_TIMESTAMP
-    (*net_signals)["INV" + inv_suffix]["status"].push(
+    (*net_signals)["INV_STATUS" + inv_suffix]["status"].push(
         (uint32_t)inverter->inverter_status(i).status());
   }
   for (int i = 0; i < inverter->inverter_errors_size(); i++) {
@@ -143,10 +143,10 @@ void inverter_deserialize(network_enums *net_enums,
       continue;
     else
       last_timestamp = inverter->inverter_errors(i)._inner_timestamp();
-    (*net_signals)["INV" + inv_suffix]["_timestamp"].push(
+    (*net_signals)["INV_ERRORS" + inv_suffix]["_timestamp"].push(
         inverter->inverter_errors(i)._inner_timestamp());
 #endif // CANLIB_TIMESTAMP
-    (*net_signals)["INV" + inv_suffix]["errors"].push(
+    (*net_signals)["INV_ERRORS" + inv_suffix]["errors"].push(
         (uint32_t)inverter->inverter_errors(i).errors());
   }
   for (int i = 0; i < inverter->inverter_das_torque_size(); i++) {
@@ -157,10 +157,10 @@ void inverter_deserialize(network_enums *net_enums,
       continue;
     else
       last_timestamp = inverter->inverter_das_torque(i)._inner_timestamp();
-    (*net_signals)["INV" + inv_suffix]["_timestamp"].push(
+    (*net_signals)["INV_DAS_TORQUE" + inv_suffix]["_timestamp"].push(
         inverter->inverter_das_torque(i)._inner_timestamp());
 #endif // CANLIB_TIMESTAMP
-    (*net_signals)["INV" + inv_suffix]["das_torque"].push(
+    (*net_signals)["INV_DAS_TORQUE" + inv_suffix]["das_torque"].push(
         inverter->inverter_das_torque(i).torque());
   }
   for (int i = 0; i < inverter->inverter_inv_torque_size(); i++) {
@@ -171,10 +171,10 @@ void inverter_deserialize(network_enums *net_enums,
       continue;
     else
       last_timestamp = inverter->inverter_inv_torque(i)._inner_timestamp();
-    (*net_signals)["INV" + inv_suffix]["_timestamp"].push(
+    (*net_signals)["INV_INV_TORQUE" + inv_suffix]["_timestamp"].push(
         inverter->inverter_inv_torque(i)._inner_timestamp());
 #endif // CANLIB_TIMESTAMP
-    (*net_signals)["INV" + inv_suffix]["inv_torque"].push(
+    (*net_signals)["INV_INV_TORQUE" + inv_suffix]["inv_torque"].push(
         inverter->inverter_inv_torque(i).torque());
   }
   for (int i = 0; i < inverter->inverter_inv_torque_actual_size(); i++) {
@@ -187,10 +187,10 @@ void inverter_deserialize(network_enums *net_enums,
     else
       last_timestamp =
           inverter->inverter_inv_torque_actual(i)._inner_timestamp();
-    (*net_signals)["INV" + inv_suffix]["_timestamp"].push(
+    (*net_signals)["INV_INV_TORQUE_ACTUAL" + inv_suffix]["_timestamp"].push(
         inverter->inverter_inv_torque_actual(i)._inner_timestamp());
 #endif // CANLIB_TIMESTAMP
-    (*net_signals)["INV" + inv_suffix]["inv_torque_actual"].push(
+    (*net_signals)["INV_INV_TORQUE_ACTUAL" + inv_suffix]["inv_torque_actual"].push(
         inverter->inverter_inv_torque_actual(i).torque());
   }
 }
