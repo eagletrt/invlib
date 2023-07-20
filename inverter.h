@@ -1,261 +1,66 @@
-#ifndef INVLIB_INVERTER_H
-#define INVLIB_INVERTER_H
+#ifndef _INVERTERS_H_
+#define _INVERTERS_H_
 
-#include <inttypes.h>
-#include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <inttypes.h>
 
-// #include "can/lib/primary/c/ids.h"
-// #include "can/lib/primary/c/network.h"
+#ifndef INV_MAX_SPEED
+#define INV_MAX_SPEED 6500
+#endif // INV_MAX_SPEED
 
-/* Configuration parameters from NDrive */
-#define INV_MAX_RPM 6500 /*< The "Nmax" parameter - maximum motor speed */
+typedef enum inverter_side_t {
+  INVERTER_SIDE_LEFT = 0,
+  INVERTER_SIDE_RIGHT = 1
+}inverter_side_t;
 
-/* Register IDs for which updates will be activated */
-#define INV_CMD_TX_REQ 0x3D
-#define INV_REG_TORQUECMD 0x90
-#define INV_REG_MODE 0x51
-#define INV_REG_STATUS 0x40
-#define INV_REG_IOINFO 0xD8
-#define INV_REG_ERRORS 0x8F
-#define INV_REG_SPEED 0xA8
-#define INV_REG_MOT_TEMP 0x49
-#define INV_REG_INV_TEMP 0x4A
-#define INV_REG_I_CMD 0x26
-#define INV_REG_I_ACTUAL 0x27
+typedef enum inverter_rcv_type {
+  INV_RCV_N_ACT_FILT = 0,
+  INV_RCV_IQ_ACT_FILT,
+  INV_RCV_MODE,
+  INV_RCV_T_IGBT,
+  INV_RCV_T_MOTOR,
 
-#define INV_IDX_LEFT 0
-#define INV_IDX_RIGHT 1
-#define INV_STR_SIZE 255
+  INV_RCV_SIZE
+}inverter_rcv_type;
 
-#ifndef INVLIB_PARKING
-/* We know it's PACKING but PARKING sounds a bit better ;) */
-#if defined(__MINGW32__)
-#define INVLIB_PARKING                                                         \
-  __attribute__((__gcc_struct__, __packed__)) // , __aligned__(1)))
-#else
-#define INVLIB_PARKING __attribute__((__packed__)) // , __aligned__(1)))
-#endif                                             // defined(__MINGW32__)
-#endif                                             // INVLIB_PARKING
+typedef enum inverter_send_type {
+  INV_SEND_SET_DIG = 0, // INVERTERS_INV_L_SEND_SEND_MUX_ID_90_M_SETDIG_CHOICE
 
-#ifdef CANLIB_TIMESTAMP
-#define INVLIB_TIMESTAMP uint64_t _timestamp;
-#else
-#define INVLIB_TIMESTAMP
-#endif // CANLIB_TIMESTAMP
+  INV_SEND_SIZE
+}inverter_send_type;
 
-typedef struct INVLIB_PARKING {
-  unsigned int drive_enable : 1;
-  unsigned int ncr0 : 1;
-  unsigned int limp : 1;
-  unsigned int limm : 1;
-  unsigned int drive_ok : 1;
-  unsigned int icns : 1;
-  unsigned int t_nlim : 1;
-  unsigned int p_n : 1;
-  unsigned int n_i : 1;
-  unsigned int n0 : 1;
-  unsigned int rsw : 1;
-  unsigned int cal0 : 1;
-  unsigned int cal : 1;
-  unsigned int tol : 1;
-  unsigned int drive_ready : 1;
-  unsigned int brk : 1;
-  unsigned int sign_mag : 1;
-  unsigned int nclip : 1;
-  unsigned int nclipp : 1;
-  unsigned int nclipm : 1;
-  unsigned int ird_dig : 1;
-  unsigned int iuse_rchd : 1;
-  unsigned int ird_n : 1;
-  unsigned int ird_ti : 1;
-  unsigned int ird_tir : 1;
-  unsigned int hz10 : 1;
-  unsigned int ird_tm : 1;
-  unsigned int ird_ana : 1;
-  unsigned int iwcns : 1;
-  unsigned int rfe_pulse : 1;
-  unsigned int md : 1;
-  unsigned int hnd_whl : 1;
-} inverter_status_expanded_t;
-
-typedef struct INVLIB_PARKING {
-  unsigned int bad_param : 1;
-  unsigned int hw_fault : 1;
-  unsigned int safety_fault : 1;
-  unsigned int can_timeout : 1;
-  unsigned int encoder_err : 1;
-  unsigned int no_power_voltage : 1;
-  unsigned int hi_motor_temp : 1;
-  unsigned int hi_device_temp : 1;
-  unsigned int overvoltage : 1;
-  unsigned int overcurrent : 1;
-  unsigned int raceaway : 1;
-  unsigned int user_err : 1;
-  unsigned int unknown_err_12 : 1;
-  unsigned int unknown_err_13 : 1;
-  unsigned int current_err : 1;
-  unsigned int ballast_overload : 1;
-  unsigned int device_id_err : 1;
-  unsigned int run_sig_fault : 1;
-  unsigned int unknown_err_19 : 1;
-  unsigned int unknown_err_20 : 1;
-  unsigned int powervoltage_warn : 1;
-  unsigned int hi_motor_temp_warn : 1;
-  unsigned int hi_device_temp_warn : 1;
-  unsigned int vout_limit_warn : 1;
-  unsigned int overcurrent_warn : 1;
-  unsigned int raceaway_warn : 1;
-  unsigned int unknown_err_27 : 1;
-  unsigned int unknown_err_28 : 1;
-  unsigned int unknown_err_29 : 1;
-  unsigned int unknown_err_30 : 1;
-  unsigned int ballast_overload_warn : 1;
-} inverter_errors_expanded_t;
-
-typedef struct INVLIB_PARKING {
-  unsigned int lmt1 : 1;
-  unsigned int lmt2 : 1;
-  unsigned int in2 : 1;
-  unsigned int in1 : 1;
-  unsigned int frg : 1;
-  unsigned int rfe : 1;
-  unsigned int unk6 : 1;
-  unsigned int unk7 : 1;
-  unsigned int out1 : 1;
-  unsigned int out2 : 1;
-  unsigned int btb : 1;
-  unsigned int go : 1;
-  unsigned int out3 : 1;
-  unsigned int out4 : 1;
-  unsigned int g_off : 1;
-  unsigned int brk1 : 1;
-} inverter_io_info_expanded_t;
-
-typedef struct {
-  uint8_t reg_id;
-  uint8_t data_0;
-  uint8_t data_1;
-  uint8_t data_2;
-  uint8_t data_3;
-  uint8_t data_4;
-  uint8_t data_5;
-  uint8_t data_6;
-  INVLIB_TIMESTAMP
-} inverter_message_INV_RESPONSE;
-
-typedef struct {
-  uint16_t io_info;
-  INVLIB_TIMESTAMP
-} inverter_io_info_t;
-
-typedef struct {
-  uint32_t status;
-  INVLIB_TIMESTAMP
-} inverter_status_t;
-
-typedef struct {
-  uint32_t errors;
-  INVLIB_TIMESTAMP
-} inverter_errors_t;
-
-typedef struct {
-  float temp;
-  INVLIB_TIMESTAMP
-} inverter_temp_t;
-
-typedef struct {
-  float motor_temp;
-  INVLIB_TIMESTAMP
-} inverter_motor_temp_t;
-
-typedef struct {
-  float speed;
-  INVLIB_TIMESTAMP
-} inverter_speed_t;
-
-typedef struct {
-  float torque;
-  INVLIB_TIMESTAMP
-} inverter_das_torque_t;
-
-typedef struct {
-  float torque;
-  INVLIB_TIMESTAMP
-} inverter_inv_torque_t;
-
-typedef struct {
-  float torque;
-  INVLIB_TIMESTAMP
-} inverter_inv_torque_actual_t;
-
-typedef struct {
-  inverter_temp_t inverter_temp;
-  inverter_speed_t inverter_speed;
-  inverter_motor_temp_t inverter_motor_temp;
-  inverter_status_t inverter_status;
-  inverter_errors_t inverter_errors;
-  inverter_io_info_t inverter_io_info;
-  inverter_das_torque_t inverter_das_torque;
-  inverter_inv_torque_t inverter_inv_torque;
-  inverter_inv_torque_actual_t inverter_inv_torque_actual;
-} inverter_data_t;
-
-typedef struct {
-  FILE *inverter_temp;
-  FILE *inverter_motor_temp;
-  FILE *inverter_speed;
-  FILE *inverter_status;
-  FILE *inverter_errors;
-  FILE *inverter_io_info;
-  FILE *inverter_das_torque;
-  FILE *inverter_inv_torque;
-  FILE *inverter_inv_torque_actual;
+typedef struct inverter_files_t {
+  FILE *l_send[INV_SEND_SIZE];
+  FILE *l_rcv[INV_RCV_SIZE];
+  FILE *r_send[INV_SEND_SIZE];
+  FILE *r_rcv[INV_RCV_SIZE];
 } inverter_files_t;
 
-// Configurations for the inverter
-void set_max_rpm(int16_t value);
-void set_inverter_response_id(uint16_t id_left, uint16_t id_right);
-void set_inverter_request_id(uint16_t id_left, uint16_t id_right);
-uint16_t get_inverter_request_id_left();
-uint16_t get_inverter_response_id_left();
-uint16_t get_inverter_request_id_right();
-uint16_t get_inverter_response_id_right();
+typedef struct inverter_string_t {
+  char str[1024];
+}inverter_string_t;
 
-// Bitsets to string
-int invlib_to_string_InvStatus(uint64_t value, char *buffer);
-int invlib_to_string_InvErrors(uint64_t value, char *buffer);
-int invlib_to_string_InvIOInfo(uint64_t value, char *buffer);
+void inverter_close_files(inverter_files_t* files);
+void inverter_flush_files(inverter_files_t* files);
+void inverter_open_files(inverter_files_t* files, const char* path);
 
-int32_t inverter_get_errors(inverter_message_INV_RESPONSE *data);
-int32_t inverter_get_status(inverter_message_INV_RESPONSE *data);
-int16_t inverter_get_io_info(inverter_message_INV_RESPONSE *data);
-float inverter_get_motor_temp(inverter_message_INV_RESPONSE *data);
-float inverter_get_inverter_temp(inverter_message_INV_RESPONSE *data);
-int16_t inverter_get_speed(inverter_message_INV_RESPONSE *data);
-float inverter_get_das_torque(inverter_message_INV_RESPONSE *data);
-float inverter_get_inv_torque(inverter_message_INV_RESPONSE *data);
-float inverter_get_inv_torque_actual(inverter_message_INV_RESPONSE *data);
+void inverter_rcv_to_file(inverter_files_t* files, inverter_side_t side, void* message);
+void inverter_send_to_file(inverter_files_t* files, inverter_side_t side, void* message);
 
-// expanded enums
-void inverter_get_status_expanded(const inverter_status_t *status,
-                                  inverter_status_expanded_t *status_expanded);
-void inverter_get_errors_expanded(const inverter_errors_t *errors,
-                                  inverter_errors_expanded_t *errors_expanded);
-void inverter_get_io_info_expanded(
-    const inverter_io_info_t *io_info,
-    inverter_io_info_expanded_t *io_info_expanded);
+void inverter_headers_to_file(inverter_files_t* files);
+void inverter_rcv_header_to_file(inverter_files_t* files, inverter_side_t side, inverter_rcv_type rcv_type);
+void inverter_send_header_to_file(inverter_files_t* files, inverter_side_t side, inverter_send_type send_type);
 
-bool parse_inverter(inverter_message_INV_RESPONSE *data, int id,
-                    inverter_data_t inverters_data[2]);
+uint8_t inverter_rcv_type_to_mux_val(inverter_rcv_type msg_type);
+inverter_rcv_type inverter_mux_val_to_rcv_type(uint8_t mux_val);
+uint8_t inverter_send_type_to_mux_val(inverter_send_type msg_type);
+inverter_send_type inverter_mux_val_to_send_type(uint8_t mux_val);
+inverter_string_t inverter_get_mux_name(uint16_t can_id, uint8_t mux_val);
 
-const char *inverter_filename(int reg_id);
-int inverter_fields(FILE *buffer, int reg_id);
-void inverter_close_files(inverter_files_t *inverters_files);
-void inverter_open_files(const char *folder, inverter_files_t *inverters_files);
-bool inverter_to_file(inverter_message_INV_RESPONSE *data, int id,
-                      inverter_files_t files[2],
-                      inverter_data_t inverters_data[2]);
+float convert_n_actual_filt(float val);
+float convert_t_motor(float val);
+float convert_t_igbt(float val);
+float convert_iq_act(float val);
+float convert_m_set_dig(float val);
 
-#endif
+#endif // _INVERTERS_H_
