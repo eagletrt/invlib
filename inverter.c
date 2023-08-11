@@ -314,7 +314,7 @@ inverter_string_t inverter_get_mux_name(uint16_t can_id, uint8_t mux_val) {
 
 // CONVERSIONS
 float convert_n_actual_filt(float val) {
-    return (val * INV_MAX_SPEED) / 32767.f;
+    return val / 10.0f * INV_MAX_SPEED / 32767.f;
 }
 float convert_t_motor(float val) {
     return (val - 9393.9f) / 55.1f;
