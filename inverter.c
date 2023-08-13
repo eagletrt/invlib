@@ -244,7 +244,7 @@ uint8_t inverter_rcv_type_to_mux_val(inverter_rcv_type msg_type) {
 uint8_t inverter_send_type_to_mux_val(inverter_send_type msg_type) {
     switch(msg_type) {
         case INV_SEND_SET_DIG:
-            return INVERTERS_INV_L_RCV_SOURCE_ID194__90H_M_SET_DIG__CHOICE;
+            return INVERTERS_INV_L_SEND_SEND_MUX_ID_90_M_SETDIG_CHOICE;
             break;
         
         default:
@@ -275,7 +275,7 @@ inverter_rcv_type inverter_mux_val_to_rcv_type(uint8_t mux_val) {
 }
 inverter_send_type inverter_mux_val_to_send_type(uint8_t mux_val) {
     switch(mux_val) {
-        case INVERTERS_INV_L_RCV_SOURCE_ID194__90H_M_SET_DIG__CHOICE:
+        case INVERTERS_INV_L_SEND_SEND_MUX_ID_90_M_SETDIG_CHOICE:
             return INV_SEND_SET_DIG;
             break;
 
