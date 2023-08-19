@@ -144,9 +144,13 @@ void inverter_send_header_to_file(inverter_files_t* files, inverter_side_t side,
 void inverter_rcv_to_file(inverter_files_t* files, inverter_side_t side, void* message) {
     FILE* out;
     uint8_t msg_type;
+    // TODO: check in a better way if the message is _converter_t or not
     if (side == INVERTER_SIDE_LEFT) {
+        inverters_inv_l_rcv_t msg_raw = *(inverters_inv_l_rcv_t *)message;
         inverters_inv_l_rcv_converted_t msg = *(inverters_inv_l_rcv_converted_t *)message;
         msg_type = inverter_mux_val_to_rcv_type(msg.rcv_mux);
+        if(msg_type == INV_RCV_SIZE)
+            return;
 
         out = files->l_rcv[msg_type];
         switch(msg_type) {
@@ -165,11 +169,16 @@ void inverter_rcv_to_file(inverter_files_t* files, inverter_side_t side, void* m
             case INV_RCV_T_MOTOR:
                 fprintf(out, "%" PRIu64 ",%f\n", msg._timestamp, convert_t_motor(msg.t_motor));
             break;
+            default:
+            break;
 
         }
     } else if (side == INVERTER_SIDE_RIGHT) {
+        inverters_inv_r_rcv_t msg_raw = *(inverters_inv_r_rcv_t *)message;
         inverters_inv_r_rcv_converted_t msg = *(inverters_inv_r_rcv_converted_t *)message;
         msg_type = inverter_mux_val_to_rcv_type(msg.rcv_mux);
+        if(msg_type == INV_RCV_SIZE)
+            return;
 
         out = files->r_rcv[msg_type];
         switch(msg_type) {
@@ -188,31 +197,44 @@ void inverter_rcv_to_file(inverter_files_t* files, inverter_side_t side, void* m
             case INV_RCV_T_MOTOR:
                 fprintf(out, "%" PRIu64 ",%f\n", msg._timestamp, convert_t_motor(msg.t_motor));
             break;
+            default:
+            break;
         }
     }
  }
 
 void inverter_send_to_file(inverter_files_t* files, inverter_side_t side, void* message) {
     FILE* out;
-    uint8_t msg_type;
+    inverter_send_type msg_type;
+    // TODO: check in a better way if the message is _converter_t or not
     if (side == INVERTER_SIDE_LEFT) {
+        inverters_inv_l_send_t msg_raw = *(inverters_inv_l_send_t *)message;
         inverters_inv_l_send_converted_t msg = *(inverters_inv_l_send_converted_t *)message;
         msg_type = inverter_mux_val_to_send_type(msg.send_mux);
+        if(msg_type == INV_SEND_SIZE)
+            return;
 
         out = files->l_send[msg_type];
         switch(msg_type) {
             case INV_SEND_SET_DIG:
-            fprintf(out, "%" PRIu64 ",%f\n", msg._timestamp, convert_m_set_dig(msg.m_setdig__iq));
+            fprintf(out, "%" PRIu64 ",%f\n", msg_raw._timestamp, convert_m_set_dig(msg_raw.m_setdig__iq));
+            break;
+            default:
             break;
         }
     } else if (side == INVERTER_SIDE_RIGHT) {
+        inverters_inv_r_send_t msg_raw = *(inverters_inv_r_send_t *)message;
         inverters_inv_r_send_converted_t msg = *(inverters_inv_r_send_converted_t *)message;
         msg_type = inverter_mux_val_to_send_type(msg.send_mux);
+        if(msg_type == INV_SEND_SIZE)
+            return;
 
         out = files->r_send[msg_type];
         switch(msg_type) {
             case INV_SEND_SET_DIG:
-            fprintf(out, "%" PRIu64 ",%f\n", msg._timestamp, convert_m_set_dig(msg.m_setdig__iq));
+            fprintf(out, "%" PRIu64 ",%f\n", msg_raw._timestamp, convert_m_set_dig(msg_raw.m_setdig__iq));
+            break;
+            default:
             break;
         }
     }
@@ -255,19 +277,14 @@ inverter_rcv_type inverter_mux_val_to_rcv_type(uint8_t mux_val) {
     switch(mux_val) {
         case INVERTERS_INV_L_RCV_RCV_MUX_ID_A8_N_ACTUAL_FILT_CHOICE:
             return INV_RCV_N_ACT_FILT;
-            break;
         case INVERTERS_INV_R_RCV_RCV_MUX_ID_27_IQ_ACTUAL_CHOICE:
             return INV_RCV_IQ_ACT_FILT;
-            break;
         case INVERTERS_INV_R_RCV_RCV_MUX_ID_51_KERN_MODE_STATE_CHOICE:
             return INV_RCV_MODE;
-            break;
         case INVERTERS_INV_R_RCV_RCV_MUX_ID_4A_T_IGBT_CHOICE:
             return INV_RCV_T_IGBT;
-            break;
         case INVERTERS_INV_R_RCV_RCV_MUX_ID_49_T_MOTOR_CHOICE:
             return INV_RCV_T_MOTOR;
-            break;
 
         default:
             return INV_RCV_SIZE;
@@ -277,7 +294,6 @@ inverter_send_type inverter_mux_val_to_send_type(uint8_t mux_val) {
     switch(mux_val) {
         case INVERTERS_INV_L_SEND_SEND_MUX_ID_90_M_SETDIG_CHOICE:
             return INV_SEND_SET_DIG;
-            break;
 
         default:
             return INV_SEND_SIZE;
