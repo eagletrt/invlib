@@ -5,7 +5,7 @@
 #include <inttypes.h>
 
 #ifndef INV_MAX_SPEED
-#define INV_MAX_SPEED 6500
+#define INV_MAX_SPEED 6500.0f
 #endif // INV_MAX_SPEED
 
 typedef enum inverter_side_t {
