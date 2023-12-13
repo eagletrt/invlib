@@ -155,10 +155,10 @@ void inverter_rcv_to_file(inverter_files_t* files, inverter_side_t side, void* m
         out = files->l_rcv[msg_type];
         switch(msg_type) {
             case INV_RCV_N_ACT_FILT:
-                fprintf(out, "%" PRIu64 ",%f\n", msg._timestamp, convert_n_actual_filt(msg.n_actual_filt));
+                fprintf(out, "%" PRIu64 ",%f\n", msg._timestamp, -convert_n_actual_filt(msg.n_actual_filt));
             break;
             case INV_RCV_IQ_ACT_FILT:
-                fprintf(out, "%" PRIu64 ",%f\n", msg._timestamp, convert_iq_act(msg.iq_actual));
+                fprintf(out, "%" PRIu64 ",%f\n", msg._timestamp, -convert_iq_act(msg.iq_actual));
             break;
             case INV_RCV_MODE:
                 fprintf(out, "%" PRIu64 ",NOT IMPLEMENTED\n", msg._timestamp);
