@@ -366,10 +366,10 @@ void inverter_rcv_apply_conversions(inverter_side_t side, void *message) {
 
         switch(msg_type) {
             case INV_RCV_N_ACT_FILT:
-                msg->n_actual_filt = -convert_n_actual_filt(msg->n_actual_filt);
+                msg->n_actual_filt = convert_n_actual_filt(msg->n_actual_filt);
             break;
             case INV_RCV_IQ_ACT_FILT:
-                msg->iq_actual = -convert_iq_act(msg->iq_actual);
+                msg->iq_actual = convert_iq_act(msg->iq_actual);
             break;
             case INV_RCV_MODE:
             break;
@@ -416,7 +416,7 @@ void inverter_send_apply_conversions(inverter_side_t side, void *message) {
 }
 
 float convert_n_actual_filt(float val) {
-    return val * INV_MAX_SPEED / UINT16_MAX * 4.5f;
+    return val * INV_MAX_SPEED / UINT16_MAX * 4.5f / 10.0f;
 }
 float convert_t_motor(float val) {
     return (val - 9393.9f) / 55.1f;
