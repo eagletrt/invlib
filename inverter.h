@@ -57,6 +57,9 @@ uint8_t inverter_send_type_to_mux_val(inverter_send_type msg_type);
 inverter_send_type inverter_mux_val_to_send_type(uint8_t mux_val);
 inverter_string_t inverter_get_mux_name(uint16_t can_id, uint8_t mux_val);
 
+void inverter_rcv_apply_conversions(inverter_side_t side, void *message);
+void inverter_send_apply_conversions(inverter_side_t side, void *message);
+
 float convert_n_actual_filt(float val);
 float convert_t_motor(float val);
 float convert_t_igbt(float val);
