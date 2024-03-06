@@ -355,11 +355,11 @@ void inverter_send_apply_conversions(inverter_side_t side, void *message) {
   if (side == INVERTER_SIDE_LEFT) {
     inverters_inv_l_send_converted_t *msg =
         (inverters_inv_l_send_converted_t *)message;
-    msg->m_setdig__iq = convert_m_set_dig(msg->m_setdig__iq);
+    msg->m_setdig__iq = convert_m_set_dig_iq(msg->m_setdig__iq);
   } else if (side == INVERTER_SIDE_RIGHT) {
     inverters_inv_r_send_converted_t *msg =
         (inverters_inv_r_send_converted_t *)message;
-    msg->m_setdig__iq = convert_m_set_dig(msg->m_setdig__iq);
+    msg->m_setdig__iq = convert_m_set_dig_iq(msg->m_setdig__iq);
   }
 }
 
@@ -372,4 +372,4 @@ float convert_t_igbt(float val) {
          1.330787e-11 * pow(val, 3);
 }
 float convert_iq_act(float val) { return val * M_PI / 2.0; }
-float convert_m_set_dig(float val) { return val; }
+float convert_m_set_dig_iq(float val) { return val / INT16_MAX * 400.0 * 0.45; }
