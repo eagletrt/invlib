@@ -217,8 +217,7 @@ void inverter_send_to_file(inverter_files_t *files, inverter_side_t side,
     out = files->l_send[msg_type];
     switch (msg_type) {
       case INV_SEND_SET_DIG:
-        fprintf(out, "%" PRIu64 ",%f\n", msg_raw->_timestamp,
-                msg_raw->m_setdig__iq);
+        fprintf(out, "%" PRIu64 ",%f\n", msg->_timestamp, msg->m_setdig__iq);
         break;
       default:
         break;
@@ -233,8 +232,7 @@ void inverter_send_to_file(inverter_files_t *files, inverter_side_t side,
     out = files->r_send[msg_type];
     switch (msg_type) {
       case INV_SEND_SET_DIG:
-        fprintf(out, "%" PRIu64 ",%f\n", msg_raw->_timestamp,
-                msg_raw->m_setdig__iq);
+        fprintf(out, "%" PRIu64 ",%f\n", msg->_timestamp, msg->m_setdig__iq);
         break;
       default:
         break;
